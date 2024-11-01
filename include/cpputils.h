@@ -3,6 +3,7 @@
 #include "namespace.h"
 #include "version.h"
 #include "likely.h"
+#include "page.h"
 #include "dout.h"
 #include "backtrace.h"
 #include "utime.h"

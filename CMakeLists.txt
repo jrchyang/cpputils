@@ -46,6 +46,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # 设置库的源文件
 set(SOURCES
   src/version.cc
+  src/page.cc
   src/backtrace.cc
   src/dout.cc
   src/utime.cc
