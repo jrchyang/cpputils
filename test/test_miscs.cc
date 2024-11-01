@@ -1,7 +1,8 @@
-#include <ios>
 #include <string>
 #include <sstream>
 #include <regex>
+#include <cassert>
+#include <stdexcept>
 #include <boost/algorithm/string.hpp>
 
 #include "gtest/gtest.h"
@@ -49,4 +50,23 @@ TEST(Miscs, Assert) {
 	EXPECT_DEATH({ cpputils_abort("common test"); }, ".*");
 	EXPECT_DEATH({ cpputils_abort_msg("common test"); }, ".*");
 	cpputils_assert(1);
+}
+
+TEST(Miscs, Formatter) {
+	struct stats_t {
+		ssize_t items = 10;
+		ssize_t bytes = 1240;
+
+		void dump(Formatter *f) const {
+			f->open_object_section("MiscsFormatter");
+			f->dump_int("items", items);
+			f->dump_int("bytes", bytes);
+			f->close_section();
+		}
+	} s;
+	auto f = Formatter::create("json-pretty");
+	s.dump(f);
+	std::stringstream oss;
+	f->flush(oss);
+	delete f;
 }

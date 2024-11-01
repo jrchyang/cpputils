@@ -27,12 +27,13 @@ include(CheckSymbolExists)
 
 check_symbol_exists(__func__ "" HAVE_FUNC)
 if(HAVE_FUNC)
-    add_definitions(-DHAVE_FUNC)
+  add_definitions(-DHAVE_FUNC)
 endif(HAVE_FUNC)
 check_symbol_exists(__PRETTY_FUNCTION__ "" HAVE_PRETTY_FUNC)
 if(HAVE_PRETTY_FUNC)
-    add_definitions(-DHAVE_PRETTY_FUNC)
+  add_definitions(-DHAVE_PRETTY_FUNC)
 endif(HAVE_PRETTY_FUNC)
+
 
 # 指定成果物路径
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -43,6 +44,14 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 # 指定文件搜索路径
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+# Boost::thread depends on Boost::atomic, so list it explicitly.
+set(BOOST_COMPONENTS
+  atomic chrono thread system regex random program_options date_time
+  iostreams context coroutine)
+set(BOOST_HEADER_COMPONENTS container)
+find_package(Boost 1.73 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
+
+
 # 设置库的源文件
 set(SOURCES
   src/version.cc
@@ -52,23 +61,11 @@ set(SOURCES
   src/utime.cc
   src/clock.cc
   src/assert.cc
+  src/formatter.cc
 )
 
 # 创建动态库
 add_library(cpputils SHARED ${SOURCES})
-
-# 创建静态库
-add_library(cpputils-static STATIC ${SOURCES})
-
-# 安装头文件
-install(DIRECTORY include/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/cpputils"
-        FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
-
-# 安装库文件
-install(TARGETS cpputils cpputils-static
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin)
 
 # Used by googletest.
 check_cxx_compiler_flag(-Wno-missing-field-initializers
@@ -102,7 +99,7 @@ if(CPPUTILS_BUILD_TESTS)
     PRIVATE
       "test/test_miscs.cc"
   )
-  target_link_libraries(cpputils_unittest_miscs cpputils gmock_main gtest)
+  target_link_libraries(cpputils_unittest_miscs gmock_main gtest cpputils)
 
   add_test(
     NAME cpputils_unittest_miscs
