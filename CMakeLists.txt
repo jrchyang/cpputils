@@ -46,6 +46,11 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # 设置库的源文件
 set(SOURCES
   src/version.cc
+  src/backtrace.cc
+  src/dout.cc
+  src/utime.cc
+  src/clock.cc
+  src/assert.cc
 )
 
 # 创建动态库
@@ -91,16 +96,16 @@ if(CPPUTILS_BUILD_TESTS)
         APPEND PROPERTY COMPILE_OPTIONS -Wno-implicit-int-float-conversion)
   endif(CPPUTILS_HAVE_NO_IMPLICIT_INT_FLOAT_CONVERSION)
 
-  add_executable(cpputils_unittest "")
-  target_sources(cpputils_unittest
+  add_executable(cpputils_unittest_miscs "")
+  target_sources(cpputils_unittest_miscs
     PRIVATE
       "test/test_miscs.cc"
   )
-  target_link_libraries(cpputils_unittest cpputils gmock_main gtest)
+  target_link_libraries(cpputils_unittest_miscs cpputils gmock_main gtest)
 
   add_test(
-    NAME cpputils_unittest
+    NAME cpputils_unittest_miscs
     WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
-    COMMAND "${EXECUTABLE_OUTPUT_PATH}/cpputils_unittest")
+    COMMAND "${EXECUTABLE_OUTPUT_PATH}/cpputils_unittest_miscs")
 
 endif(CPPUTILS_BUILD_TESTS)
